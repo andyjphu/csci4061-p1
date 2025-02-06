@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-//#include <sys/sysmacros.h> removed for version issue
+#include <sys/sysmacros.h> removed for version issue
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -166,7 +166,7 @@ int append_files_to_archive(const char *archive_name, const file_list_t *files) 
         perror("Error: Failed to open archive");
         return 1;
     }
-    
+
     node_t *curr = files->head;
     while (curr) {
         if (write_file_to_archive(archive, curr->name) != 0) {
@@ -224,7 +224,7 @@ int extract_files_from_archive(const char *archive_name) {
 
 int file_exists(const char *archive_name, const char *file_name) {
     FILE *archive = fopen(archive_name, "rb");
-    if (!archive) return 0;
+    if (!archive) return 0; //File does not exist -- return something else?
 
     char name[MAX_NAME_LEN];
     while (read_tar_header(archive, name, NULL) == 0) {
@@ -233,7 +233,7 @@ int file_exists(const char *archive_name, const char *file_name) {
             return -1;
         }
     }
-    
+
     fclose(archive);
     return 0;
 }
