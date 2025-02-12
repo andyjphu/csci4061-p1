@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/sysmacros.h> 
+#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -124,6 +124,10 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 }
 
 
+
+
+
+
 int create_archive(const char *archive_name, const file_list_t *files) {
     FILE *archive = fopen(archive_name, "wb");
     if (!archive) {
@@ -148,66 +152,8 @@ int create_archive(const char *archive_name, const file_list_t *files) {
     return 0;
 }
 
-
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
-    struct stat st;
-    if (stat(archive_name, &st) != 0) {
-        perror("Error: Archive %s doesn't exist");
-        return -1;
-    }
-
-    if(remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS) == -1) {
-        perror("Error: Couldn't remove trailing bytes");
-        return -1;
-    }
-
-    FILE *archive = fopen(archive_name, "ab+");
-    if (!archive) {
-        perror("Error: Failed to open archive");
-        return 1;
-    }
-
-    node_t *curr = files->head;
-    while (curr) {
-        if (write_file_to_archive(archive, curr->name) != 0) {
-            perror("Error: Failed to append %s to archive.\n");
-        }
-        curr = curr->next;
-    }
-
-    if(write_tar_footer(archive) != 0) {
-        perror("Error: Failed to write footer.");
-    }
-
-    fclose(archive);
-    return 0;
-}
-
-int update_archive(const char *archive_name, const file_list_t *files) {
-    struct stat st;
-    // if (stat(archive_name, &st) != 0) {
-    //     printf("Error: Archive '%s' does not exist.\n", archive_name);
-    //     return 1;
-    // }
-
-    file_list_t new_files;
-    file_list_init(&new_files);
-
-    node_t *curr = files->head;
-    while (curr) {
-        if (!file_exists_in_archive(archive_name, curr->name)) {
-            file_list_add(&new_files, curr->name);
-        }
-        curr = curr->next;
-    }
-
-    if (new_files.size > 0) {
-        int result = append_files_to_archive(archive_name, &new_files);
-        file_list_clear(&new_files);
-        return result;
-    }
-
-    file_list_clear(&new_files);
+    // TODO: Not yet implemented
     return 0;
 }
 
@@ -218,22 +164,5 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
 
 int extract_files_from_archive(const char *archive_name) {
     // TODO: Not yet implemented
-    return 0;
-}
-
-
-int file_exists(const char *archive_name, const char *file_name) {
-    FILE *archive = fopen(archive_name, "rb");
-    if (!archive) return 0; //File does not exist -- return something else?
-
-    char name[MAX_NAME_LEN];
-    while (read_tar_header(archive, name, NULL) == 0) {
-        if (strcmp(name, file_name) == 0) {
-            fclose(archive);
-            return -1;
-        }
-    }
-
-    fclose(archive);
     return 0;
 }
