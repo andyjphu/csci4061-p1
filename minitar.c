@@ -126,7 +126,30 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 
+int write_files_to_archive(const char *archive_name, const file_list_t *files) {
+    FILE *archive = fopen(archive_name, "wb");
+    if (!archive) {
+        perror("Failed to open archive file");
+        return -1;
+    }
 
+    node_t *curr = files->head;
+    FILE 
+    while (curr != NULL) {
+        *src = fopen(curr);
+        
+        //create header
+        tar_header *header = malloc(sizeof(tar_header));
+        fill_tar_header(header, curr->name);
+        
+        
+        //write file
+
+        fclose(src);
+        fclose(src);
+        curr = curr->next;
+    }
+}
 
 int create_archive(const char *archive_name, const file_list_t *files) {
     FILE *archive = fopen(archive_name, "wb");
@@ -135,7 +158,27 @@ int create_archive(const char *archive_name, const file_list_t *files) {
         return -1;
     }
 
-    // Curr iterates through file list and write each file to archive
+    fill_tar_header(archive_name, );
+
+    write_files_to_archive(archive_name, files);
+
+    write_footer(archive);
+
+    fclose(archive);
+    return 0;
+}
+
+
+
+int append_files_to_archive(const char *archive_name, const file_list_t *files) {
+    FILE *archive = fopen(archive_name, "wb");
+    if (!archive) {
+        perror("Failed to open archive file");
+        return -1;
+    }
+
+    remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
+
     node_t *curr = files->head;
     while (curr != NULL) {
         if (write_file_to_archive(archive, curr->name) == -1) {
@@ -145,15 +188,6 @@ int create_archive(const char *archive_name, const file_list_t *files) {
         curr = curr->next;
     }
 
-    // Write trailing two-block footer
-    write_footer(archive);
-
-    fclose(archive);
-    return 0;
-}
-
-int append_files_to_archive(const char *archive_name, const file_list_t *files) {
-    // TODO: Not yet implemented
     return 0;
 }
 
