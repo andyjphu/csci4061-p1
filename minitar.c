@@ -5,6 +5,7 @@
 #include <math.h>
 #include <pwd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
@@ -134,60 +135,84 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files) {
     }
 
     node_t *curr = files->head;
-    FILE 
     while (curr != NULL) {
-        *src = fopen(curr);
-        
+        FILE *src = fopen(curr->name, "rb");
+
+        // get file size
+        fseek(src, 0, SEEK_END);
+        long file_size = ftell(src);
+        fseek(src, 0, SEEK_SET);
+
         //create header
         tar_header *header = malloc(sizeof(tar_header));
         fill_tar_header(header, curr->name);
         
         
-        //write file
+        //write header
+        fwrite(&header, sizeof(tar_header), 1, archive);
 
-        fclose(src);
+        // write file
+        char buffer[BLOCK_SIZE];
+        size_t bytes_read;
+        while ((bytes_read = fread(buffer, 1, BLOCK_SIZE, src) > 0)) {
+            fwrite(buffer, 1, bytes_read, archive);
+        }
+
+        // file padding
+        size_t padding_size = (BLOCK_SIZE - (file_size % BLOCK_SIZE)) % BLOCK_SIZE;
+        if (padding_size > 0) {
+            char padding[BLOCK_SIZE] = {0};
+            fwrite(padding, 1, padding_size, archive);
+        }
+
+        free(header);
         fclose(src);
         curr = curr->next;
     }
+
+    char empty_block[512] = {0};
+    fwrite(empty_block, 1, sizeof(empty_block), archive);
+    fwrite(empty_block, 1, sizeof(empty_block), archive);
+
+    fclose(archive);
+
+    return 0;
 }
 
 int create_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "wb");
-    if (!archive) {
-        perror("Failed to open archive file");
-        return -1;
-    }
-
-    fill_tar_header(archive_name, );
+    // FILE *archive = fopen(archive_name, "wb");
+    // if (!archive) {
+    //     perror("Failed to open archive file");
+    //     return -1;
+    // }
 
     write_files_to_archive(archive_name, files);
 
-    write_footer(archive);
+    //write_footer(archive);
 
-    fclose(archive);
+    // fclose(archive);
     return 0;
 }
 
 
 
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "wb");
-    if (!archive) {
-        perror("Failed to open archive file");
-        return -1;
-    }
+    // FILE *archive = fopen(archive_name, "wb");
+    // if (!archive) {
+    //     perror("Failed to open archive file");
+    //     return -1;
+    // }
 
     remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
 
-    node_t *curr = files->head;
-    while (curr != NULL) {
-        if (write_file_to_archive(archive, curr->name) == -1) {
-            fclose(archive);
-            return -1;
-        }
-        curr = curr->next;
-    }
+    write_files_to_archive(archive_name, files);
 
+    // write_footer(archive);
+
+    return 0;
+}
+
+int update_archive(const char *archive_name) {
     return 0;
 }
 

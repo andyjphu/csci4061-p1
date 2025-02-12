@@ -1,0 +1,57 @@
+==1080071== Memcheck, a memory error detector
+==1080071== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1080071== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1080071== Command: ./minitar -c -f test.tar f11.txt f13.txt f15.bin f17.bin
+==1080071== Parent PID: 1079430
+==1080071== 
+==1080071== Invalid read of size 4
+==1080071==    at 0x492FE4C: fseek (fseek.c:35)
+==1080071==    by 0x109E5D: write_files_to_archive (minitar.c:142)
+==1080071==    by 0x10A0B3: create_archive (minitar.c:189)
+==1080071==    by 0x1094C4: main (minitar_main.c:25)
+==1080071==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+==1080071== 
+==1080071== 
+==1080071== Process terminating with default action of signal 11 (SIGSEGV)
+==1080071==  Access not within mapped region at address 0x0
+==1080071==    at 0x492FE4C: fseek (fseek.c:35)
+==1080071==    by 0x109E5D: write_files_to_archive (minitar.c:142)
+==1080071==    by 0x10A0B3: create_archive (minitar.c:189)
+==1080071==    by 0x1094C4: main (minitar_main.c:25)
+==1080071==  If you believe this happened as a result of a stack
+==1080071==  overflow in your program's main thread (unlikely but
+==1080071==  possible), you can try to increase the size of the
+==1080071==  main thread stack using the --main-stacksize= flag.
+==1080071==  The main thread stack size used in this run was 8388608.
+==1080071== 
+==1080071== HEAP SUMMARY:
+==1080071==     in use at exit: 672 bytes in 6 blocks
+==1080071==   total heap usage: 7 allocs, 1 frees, 1,144 bytes allocated
+==1080071== 
+==1080071== 40 bytes in 1 blocks are still reachable in loss record 1 of 3
+==1080071==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1080071==    by 0x109619: file_list_add (file_list.c:15)
+==1080071==    by 0x10948B: main (minitar_main.c:20)
+==1080071== 
+==1080071== 160 bytes in 4 blocks are still reachable in loss record 2 of 3
+==1080071==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1080071==    by 0x1096AB: file_list_add (file_list.c:29)
+==1080071==    by 0x10948B: main (minitar_main.c:20)
+==1080071== 
+==1080071== 472 bytes in 1 blocks are still reachable in loss record 3 of 3
+==1080071==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1080071==    by 0x4926E7E: __fopen_internal (iofopen.c:65)
+==1080071==    by 0x4926E7E: fopen@@GLIBC_2.2.5 (iofopen.c:86)
+==1080071==    by 0x109DE4: write_files_to_archive (minitar.c:131)
+==1080071==    by 0x10A0B3: create_archive (minitar.c:189)
+==1080071==    by 0x1094C4: main (minitar_main.c:25)
+==1080071== 
+==1080071== LEAK SUMMARY:
+==1080071==    definitely lost: 0 bytes in 0 blocks
+==1080071==    indirectly lost: 0 bytes in 0 blocks
+==1080071==      possibly lost: 0 bytes in 0 blocks
+==1080071==    still reachable: 672 bytes in 6 blocks
+==1080071==         suppressed: 0 bytes in 0 blocks
+==1080071== 
+==1080071== For lists of detected and suppressed errors, rerun with: -s
+==1080071== ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 0 from 0)

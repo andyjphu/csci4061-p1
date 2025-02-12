@@ -1,0 +1,57 @@
+==1080011== Memcheck, a memory error detector
+==1080011== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1080011== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1080011== Command: ./minitar -c -f test.tar hello.txt f16.txt f14.bin f11.bin f19.txt
+==1080011== Parent PID: 1079430
+==1080011== 
+==1080011== Invalid read of size 4
+==1080011==    at 0x492FE4C: fseek (fseek.c:35)
+==1080011==    by 0x109E5D: write_files_to_archive (minitar.c:142)
+==1080011==    by 0x10A0B3: create_archive (minitar.c:189)
+==1080011==    by 0x1094C4: main (minitar_main.c:25)
+==1080011==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+==1080011== 
+==1080011== 
+==1080011== Process terminating with default action of signal 11 (SIGSEGV)
+==1080011==  Access not within mapped region at address 0x0
+==1080011==    at 0x492FE4C: fseek (fseek.c:35)
+==1080011==    by 0x109E5D: write_files_to_archive (minitar.c:142)
+==1080011==    by 0x10A0B3: create_archive (minitar.c:189)
+==1080011==    by 0x1094C4: main (minitar_main.c:25)
+==1080011==  If you believe this happened as a result of a stack
+==1080011==  overflow in your program's main thread (unlikely but
+==1080011==  possible), you can try to increase the size of the
+==1080011==  main thread stack using the --main-stacksize= flag.
+==1080011==  The main thread stack size used in this run was 8388608.
+==1080011== 
+==1080011== HEAP SUMMARY:
+==1080011==     in use at exit: 712 bytes in 7 blocks
+==1080011==   total heap usage: 8 allocs, 1 frees, 1,184 bytes allocated
+==1080011== 
+==1080011== 40 bytes in 1 blocks are still reachable in loss record 1 of 3
+==1080011==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1080011==    by 0x109619: file_list_add (file_list.c:15)
+==1080011==    by 0x10948B: main (minitar_main.c:20)
+==1080011== 
+==1080011== 200 bytes in 5 blocks are still reachable in loss record 2 of 3
+==1080011==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1080011==    by 0x1096AB: file_list_add (file_list.c:29)
+==1080011==    by 0x10948B: main (minitar_main.c:20)
+==1080011== 
+==1080011== 472 bytes in 1 blocks are still reachable in loss record 3 of 3
+==1080011==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1080011==    by 0x4926E7E: __fopen_internal (iofopen.c:65)
+==1080011==    by 0x4926E7E: fopen@@GLIBC_2.2.5 (iofopen.c:86)
+==1080011==    by 0x109DE4: write_files_to_archive (minitar.c:131)
+==1080011==    by 0x10A0B3: create_archive (minitar.c:189)
+==1080011==    by 0x1094C4: main (minitar_main.c:25)
+==1080011== 
+==1080011== LEAK SUMMARY:
+==1080011==    definitely lost: 0 bytes in 0 blocks
+==1080011==    indirectly lost: 0 bytes in 0 blocks
+==1080011==      possibly lost: 0 bytes in 0 blocks
+==1080011==    still reachable: 712 bytes in 7 blocks
+==1080011==         suppressed: 0 bytes in 0 blocks
+==1080011== 
+==1080011== For lists of detected and suppressed errors, rerun with: -s
+==1080011== ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 0 from 0)

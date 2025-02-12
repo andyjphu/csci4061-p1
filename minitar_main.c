@@ -23,16 +23,17 @@ int main(int argc, char **argv) {
 
     if (strcmp(cmd, "-c") == 0) {
         create_archive(archive, &files);
-    } else if (strcomp(cmd, "-a") == 0) {
+    } else if (strcmp(cmd, "-a") == 0) {
         append_files_to_archive(archive, &files);
-    } else if (strcomp(cmd, "-a") == 0) {
-        get_archive_file_list(archive);
-    } else if (strcomp(cmd, "-a") == 0) {
-        update_archive(archive, &files);
-    } else if (strcomp(cmd, "-a") == 0) {
+    } else if (strcmp(cmd, "-t") == 0) {
+        get_archive_file_list(archive, &files);
+    } else if (strcmp(cmd, "-u") == 0) {
+        // check if they already exist
+        append_files_to_archive(archive, &files);
+    } else if (strcmp(cmd, "-x") == 0) {
         extract_files_from_archive(archive);
     } else {
-        print("Unknown command: %s\n", cmd);
+        printf("Unknown command: %s\n", cmd);
         return -1;
     }
 
