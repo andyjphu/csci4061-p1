@@ -190,20 +190,29 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files, c
         compute_checksum(header);
 
         // Write header
-        fwrite(header, sizeof(tar_header), 1, archive);
+        if (fwrite(header, sizeof(tar_header), 1, archive) == 0) {
+            perror ("unable to write header to archive file");
+            return -1;
+        }
 
         // Write file content
         char buffer[BLOCK_SIZE];
         size_t bytes_read;
         while ((bytes_read = fread(buffer, 1, BLOCK_SIZE, src)) > 0) {
-            fwrite(buffer, 1, bytes_read, archive);
+            if (fwrite(buffer, 1, bytes_read, archive) == 0) {
+                perror ("unable to write file contents to archive file");
+                return -1;
+            }
         }
 
         // File padding
         size_t padding_size = (BLOCK_SIZE - (file_size % BLOCK_SIZE)) % BLOCK_SIZE;
         if (padding_size > 0) {
             char padding[BLOCK_SIZE] = {0};
-            fwrite(padding, 1, padding_size, archive);
+            if (fwrite(padding, 1, padding_size, archive) == 0) {
+                perror ("unable to write file padding to archive file");
+                return -1;
+            }
         }
 
         free(header);
