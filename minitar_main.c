@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-
 #include <stdlib.h>
 #include "file_list.h"
 #include "minitar.h"
+
 
 int update_archive(const char *archive_name, const file_list_t *files) {
     FILE *archive = fopen(archive_name, "rb");
@@ -12,26 +12,20 @@ int update_archive(const char *archive_name, const file_list_t *files) {
         // perror(err_msg);
         return -1;
     }
-
     // creates file list for archive
     file_list_t archive_files;
     file_list_init(&archive_files);
-
     // fetches all files in archive
     get_archive_file_list(archive_name, &archive_files);
-
     // compares files from archive and files to update
     node_t *archive_file = archive_files.head;
     node_t *update_file = files->head;
     while(update_file != NULL) {
         if (archive_file == NULL) {
-            fclose(archive);
-            file_list_clear(&archive_files);
             return -1;
         } else {
             if (archive_file->name != update_file->name) {
                 fclose(archive);
-                file_list_clear(&archive_files);
                 return -1;
             }
         }
@@ -39,18 +33,13 @@ int update_archive(const char *archive_name, const file_list_t *files) {
         archive_file = archive_file->next;
     }
     fclose(archive);
-    file_list_clear(&archive_files);
-
     return append_files_to_archive(archive_name, files);
 }
+
 
 int main(int argc, char **argv) {
     if (argc < 4) {
         printf("Usage: %s -c|a|t|u|x -f ARCHIVE [FILE...]\n", argv[0]);
-        return 0;
-    }
-
-    file_list_t files;
     file_list_init(&files);
 
     char *cmd = argv[1];
@@ -66,13 +55,18 @@ int main(int argc, char **argv) {
         append_files_to_archive(archive_name, &files);
     } else if (strcmp(cmd, "-t") == 0) {
         get_archive_file_list(archive_name, &files);
+        node_t *curr = files.head;
+        for (int i = 0; i < files.size; i++) {
+            printf("%s\n", curr->name);
+            curr = curr->next;
+        }
     } else if (strcmp(cmd, "-u") == 0) {
+        // check if they already exist
         update_archive(archive_name, &files);
     } else if (strcmp(cmd, "-x") == 0) {
         extract_files_from_archive(archive_name);
     } else {
         printf("Unknown command: %s\n", cmd);
-        file_list_clear(&files);
         return -1;
     }
 
