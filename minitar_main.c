@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
         }
     } else if (strcmp(cmd, "-u") == 0) {
         // check if they already exist
-        append_files_to_archive(archive, &files);
+        update_archive(archive, &files);
     } else if (strcmp(cmd, "-x") == 0) {
         extract_files_from_archive(archive);
     } else {
