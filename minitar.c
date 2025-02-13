@@ -212,17 +212,10 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files) {
 }
 
 int create_archive(const char *archive_name, const file_list_t *files) {
-    // FILE *archive = fopen(archive_name, "wb");
-    // if (!archive) {
-    //     perror("Failed to open archive file");
-    //     return -1;
-    // }
+
+
 
     return write_files_to_archive(archive_name, files);
-
-    //write_footer(archive);
-
-    // fclose(archive);
 }
 
 
@@ -236,7 +229,7 @@ int append_files_to_archive(const char *archive_name, const file_list_t *files) 
 
 
     remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
-    
+
 
     return write_files_to_archive(archive_name, files);
 }
@@ -268,7 +261,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
 
         fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
 
-        if (memcmp(&header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
+        if (memcmp(header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
             // Read the next block to confirm it's also all zeros
             if (fread(next_block, BLOCK_SIZE, 1, archive) == 1 && memcmp(next_block, block, BLOCK_SIZE) == 0) {
                 return 0;
