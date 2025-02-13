@@ -128,8 +128,15 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 
-int create_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "wb");
+int write_files_to_archive(const char *archive_name, const file_list_t *files, const int create) {
+    char procedure[3];  // Space for "wb\0" or "ab\0"
+    if (create) {
+        strncpy(procedure, "wb", 3);  // Copy "wb" and null-terminate
+    } else {
+        strncpy(procedure, "ab", 3);  // Copy "ab" and null-terminate
+    }
+
+    FILE *archive = fopen(archive_name, procedure);
     if (!archive) {
         perror("Failed to open archive file");
         return -1;
@@ -211,34 +218,18 @@ int create_archive(const char *archive_name, const file_list_t *files) {
     return 0;
 }
 
-// int create_archive(const char *archive_name, const file_list_t *files) {
-//     // FILE *archive = fopen(archive_name, "wb");
-//     // if (!archive) {
-//     //     perror("Failed to open archive file");
-//     //     return -1;
-//     // }
-
-//     return write_files_to_archive(archive_name, files);
-
-//     //write_footer(archive);
-
-//     // fclose(archive);
-// }
+int create_archive(const char *archive_name, const file_list_t *files) {
+    return write_files_to_archive(archive_name, files, 1);
+}
 
 
 
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
-    // FILE *archive = fopen(archive_name, "wb");
-    // if (!archive) {
-    //     perror("Failed to open archive file");
-    //     return -1;
-    // }
-
 
     remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
     
 
-    return create_archive(archive_name, files);
+    return write_files_to_archive(archive_name, files, 0);
 }
 
 
@@ -257,11 +248,6 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
     int read_status = fread(header, sizeof(tar_header), 1, archive);
 
     while (read_status == 1) {
-
-
-
-
-
         int file_size = strtol(header->size, NULL, 8);
         int num_blocks = (int)ceil((double)file_size / BLOCK_SIZE);
 
