@@ -128,15 +128,120 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 
-int create_archive(const char *archive_name, const file_list_t *files) {
+int write_files_to_archive(const char *archive_name, const file_list_t *files) {
+    FILE *archive = fopen(archive_name, "wb");
+    if (!archive) {
+        perror("Failed to open archive file");
+        return -1;
+    }
+
+    node_t *curr = files->head;
+    while (curr != NULL) {
+        FILE *src = fopen(curr->name, "rb");
+        if (!src) {
+            perror("Failed to open source file: No such file or directory");
+            fclose(archive);
+            return -1;
+        }
+
+        // Get file size
+        if (fseek(src, 0, SEEK_END) != 0) {
+            perror("Failed to seek to end of file");
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
+        long file_size = ftell(src);
+        if (file_size == -1) {
+            perror("Failed to get file size");
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
+        fseek(src, 0, SEEK_SET);
+
+        // Create header
+        tar_header *header = malloc(sizeof(tar_header));
+        if (!header) {
+            perror("Failed to allocate memory for header");
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
+
+        if (fill_tar_header(header, curr->name) != 0) {
+            free(header);
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
+
+        // Compute checksum
+        compute_checksum(header);
+
+        // Write header
+        fwrite(header, sizeof(tar_header), 1, archive);
+
+        // Write file content
+        char buffer[BLOCK_SIZE];
+        size_t bytes_read;
+        while ((bytes_read = fread(buffer, 1, BLOCK_SIZE, src)) > 0) {
+            fwrite(buffer, 1, bytes_read, archive);
+        }
+
+        // File padding
+        size_t padding_size = (BLOCK_SIZE - (file_size % BLOCK_SIZE)) % BLOCK_SIZE;
+        if (padding_size > 0) {
+            char padding[BLOCK_SIZE] = {0};
+            fwrite(padding, 1, padding_size, archive);
+        }
+
+        free(header);
+        fclose(src);
+        curr = curr->next;
+    }
+
+    // Write two empty blocks to signify end of archive
+    char empty_block[BLOCK_SIZE] = {0};
+    fwrite(empty_block, 1, sizeof(empty_block), archive);
+    fwrite(empty_block, 1, sizeof(empty_block), archive);
+
+    fclose(archive);
+
     return 0;
+}
+
+int create_archive(const char *archive_name, const file_list_t *files) {
+    // FILE *archive = fopen(archive_name, "wb");
+    // if (!archive) {
+    //     perror("Failed to open archive file");
+    //     return -1;
+    // }
+
+    return write_files_to_archive(archive_name, files);
+
+    //write_footer(archive);
+
+    // fclose(archive);
 }
 
 
 
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
-    return 0;
+    // FILE *archive = fopen(archive_name, "wb");
+    // if (!archive) {
+    //     perror("Failed to open archive file");
+    //     return -1;
+    // }
+
+
+    remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
+    
+
+    return write_files_to_archive(archive_name, files);
 }
+
+
 int get_archive_file_list(const char *archive_name, file_list_t *files) {
     FILE *archive = fopen(archive_name, "rb");
     if (!archive) {
