@@ -10,6 +10,7 @@
 #include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #define NUM_TRAILING_BLOCKS 2
 #define MAX_MSG_LEN 128
@@ -126,75 +127,64 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 
-int write_files_to_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "wb");
-    if (!archive) {
-        perror("Failed to open archive file");
-        return -1;
-    }
-
-    node_t *curr = files->head;
-    FILE 
-    while (curr != NULL) {
-        *src = fopen(curr);
-        
-        //create header
-        tar_header *header = malloc(sizeof(tar_header));
-        fill_tar_header(header, curr->name);
-        
-        
-        //write file
-
-        fclose(src);
-        fclose(src);
-        curr = curr->next;
-    }
-}
 
 int create_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "wb");
-    if (!archive) {
-        perror("Failed to open archive file");
-        return -1;
-    }
-
-    fill_tar_header(archive_name, );
-
-    write_files_to_archive(archive_name, files);
-
-    write_footer(archive);
-
-    fclose(archive);
     return 0;
 }
 
 
 
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "wb");
+    return 0;
+}
+int get_archive_file_list(const char *archive_name, file_list_t *files) {
+    FILE *archive = fopen(archive_name, "rb");
     if (!archive) {
         perror("Failed to open archive file");
         return -1;
     }
 
-    remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
 
-    node_t *curr = files->head;
-    while (curr != NULL) {
-        if (write_file_to_archive(archive, curr->name) == -1) {
-            fclose(archive);
-            return -1;
+    tar_header *header;
+    char block[BLOCK_SIZE] = {0};
+    char next_block[BLOCK_SIZE] = {0};
+
+    int read_status = fread(header, sizeof(tar_header), 1, archive);
+
+    while (read_status == 1) {
+
+
+
+
+
+        int file_size = strtol(header->size, NULL, 8);
+        int num_blocks = (int)ceil((double)file_size / BLOCK_SIZE);
+
+
+        fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
+
+        if (memcmp(&header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
+            // Read the next block to confirm it's also all zeros
+            if (fread(next_block, BLOCK_SIZE, 1, archive) == 1 && memcmp(next_block, block, BLOCK_SIZE) == 0) {
+                return 0;
+            }
+            // If it's not a second zero block, rewind one block back
+            fseek(archive, -BLOCK_SIZE, SEEK_CUR);
         }
-        curr = curr->next;
+
+        // Add the filename to the list
+        file_list_add(files, header->name);
+
+        file_size = strtol(header->size, NULL, 8);
+        num_blocks = (int)ceil((double)file_size / BLOCK_SIZE);
+
+        fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
     }
 
+    fclose(archive);
     return 0;
 }
 
-int get_archive_file_list(const char *archive_name, file_list_t *files) {
-    // TODO: Not yet implemented
-    return 0;
-}
 
 int extract_files_from_archive(const char *archive_name) {
     // TODO: Not yet implemented
