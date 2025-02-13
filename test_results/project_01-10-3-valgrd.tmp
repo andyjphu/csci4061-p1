@@ -1,6 +1,15 @@
-==1142639== Memcheck, a memory error detector
-==1142639== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==1142639== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==1142639== Command: ./minitar -t -f test.tar
-==1142639== Parent PID: 1142232
-==1142639== 
+==76395== Memcheck, a memory error detector
+==76395== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==76395== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==76395== Command: ./minitar -t -f test.tar
+==76395== Parent PID: 74553
+==76395== 
+==76395== 
+==76395== HEAP SUMMARY:
+==76395==     in use at exit: 0 bytes in 0 blocks
+==76395==   total heap usage: 5 allocs, 5 frees, 6,144 bytes allocated
+==76395== 
+==76395== All heap blocks were freed -- no leaks are possible
+==76395== 
+==76395== For lists of detected and suppressed errors, rerun with: -s
+==76395== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
