@@ -227,7 +227,7 @@ int create_archive(const char *archive_name, const file_list_t *files) {
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
 
     remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
-    
+
 
     return write_files_to_archive(archive_name, files, 0);
 }
@@ -243,26 +243,30 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
 
     tar_header *header = malloc(sizeof(tar_header));
     char block[BLOCK_SIZE] = {0};
-    char next_block[BLOCK_SIZE] = {0};
 
-    int read_status = fread(header, sizeof(tar_header), 1, archive);
+    int read_status = 1;
+    int file_size;
+    int num_blocks;
 
     while (read_status == 1) {
-        int file_size = strtol(header->size, NULL, 8);
-        int num_blocks = (int)ceil((double)file_size / BLOCK_SIZE);
+        read_status = fread(header, sizeof(tar_header), 1, archive);
 
 
-        fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
 
-        if (memcmp(header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
+
+        if ((int)memcmp(header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
             // Read the next block to confirm it's also all zeros
-            if (fread(next_block, BLOCK_SIZE, 1, archive) == 1 && memcmp(next_block, block, BLOCK_SIZE) == 0) {
+            read_status = fread(header, sizeof(tar_header), 1, archive);
+            if (read_status == 1 && (int)memcmp(header, block, BLOCK_SIZE) == 0) {
                 free(header);
+                fclose(archive);
                 return 0;
             }
-            // If it's not a second zero block, rewind one block back
-            fseek(archive, -BLOCK_SIZE, SEEK_CUR);
+            // If it's not a second zero block, print error
+            perror("unexpected all zero block found in tar file");
+            return -1;
         }
+
 
         // Add the filename to the list
         file_list_add(files, header->name);
@@ -274,7 +278,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
     }
     free(header);
     fclose(archive);
-    return 0;
+    return -1;
 }
 
 
