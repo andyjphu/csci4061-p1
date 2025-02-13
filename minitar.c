@@ -250,7 +250,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
     }
 
 
-    tar_header *header;
+    tar_header *header = malloc(sizeof(tar_header));
     char block[BLOCK_SIZE] = {0};
     char next_block[BLOCK_SIZE] = {0};
 
@@ -268,9 +268,10 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
 
         fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
 
-        if (memcmp(&header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
+        if (memcmp(header, block, BLOCK_SIZE) == 0) {         // Check if the block is all zeros (possible first footer block)
             // Read the next block to confirm it's also all zeros
             if (fread(next_block, BLOCK_SIZE, 1, archive) == 1 && memcmp(next_block, block, BLOCK_SIZE) == 0) {
+                free(header);
                 return 0;
             }
             // If it's not a second zero block, rewind one block back
@@ -285,7 +286,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
 
         fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
     }
-
+    free(header);
     fclose(archive);
     return 0;
 }
