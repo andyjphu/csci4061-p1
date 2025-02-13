@@ -129,29 +129,32 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 int write_files_to_archive(const char *archive_name, const file_list_t *files, const int create) {
-    char procedure[3];  // Space for "wb\0" or "ab\0"
+    // either creates/overwrites or appends
+    char procedure[3];
     if (create) {
-        strncpy(procedure, "wb", 3);  // Copy "wb" and null-terminate
+        strncpy(procedure, "wb", 3);
     } else {
-        strncpy(procedure, "ab", 3);  // Copy "ab" and null-terminate
+        strncpy(procedure, "ab", 3);
     }
 
+    // open archive
     FILE *archive = fopen(archive_name, procedure);
     if (!archive) {
-        perror("Failed to open archive file");
+        perror("Failed to open archive file: %s", archive_name);
         return -1;
     }
 
     node_t *curr = files->head;
     while (curr != NULL) {
+        // opens file
         FILE *src = fopen(curr->name, "rb");
         if (!src) {
-            perror("Failed to open source file: No such file or directory");
+            perror("Failed to open source file: %s", curr->name);
             fclose(archive);
             return -1;
         }
 
-        // Get file size
+        // gets file size
         if (fseek(src, 0, SEEK_END) != 0) {
             perror("Failed to seek to end of file");
             fclose(src);
@@ -222,7 +225,34 @@ int create_archive(const char *archive_name, const file_list_t *files) {
     return write_files_to_archive(archive_name, files, 1);
 }
 
+int update_archive(const char *archive_name, const file_list_t *files) {
+    FILE *archive = fopen(archive_name, "rb");
+    if (!archive) {
+        perror("Failed to open archive file: %s", archive_name);
+        return -1;
+    }
 
+    file_list_t archive_files;
+    file_list_init(&archive_files);
+
+    get_archive_file_list(archive_name, &archive_files);
+
+    // compares files from archive and files to update
+    node_t *archive_file
+    node_t *update_file = files->head;
+    while(update_file != NULL) {
+        if (archive_file) == NULL {
+            return -1;
+        } else {
+            if (archive_file->name != update_file->name) {
+                return -1;
+            }
+        }
+        update_file = update_file->next;
+        archive_file = archive_file->next;
+    }
+    return 0;
+}
 
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
 
@@ -279,6 +309,5 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
 
 
 int extract_files_from_archive(const char *archive_name) {
-    // TODO: Not yet implemented
     return 0;
 }
