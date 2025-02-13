@@ -243,7 +243,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
     }
 
 
-    tar_header *header;
+    tar_header *header = malloc(sizeof(tar_header));
     char block[BLOCK_SIZE] = {0};
     char next_block[BLOCK_SIZE] = {0};
 
