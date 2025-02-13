@@ -25,10 +25,13 @@ int update_archive(const char *archive_name, const file_list_t *files) {
     node_t *update_file = files->head;
     while(update_file != NULL) {
         if (archive_file == NULL) {
+            fclose(archive);
+            file_list_clear(&archive_files);
             return -1;
         } else {
             if (archive_file->name != update_file->name) {
                 fclose(archive);
+                file_list_clear(&archive_files);
                 return -1;
             }
         }
@@ -36,6 +39,7 @@ int update_archive(const char *archive_name, const file_list_t *files) {
         archive_file = archive_file->next;
     }
     fclose(archive);
+    file_list_clear(&archive_files);
 
     return append_files_to_archive(archive_name, files);
 }
@@ -61,11 +65,14 @@ int main(int argc, char **argv) {
     } else if (strcmp(cmd, "-a") == 0) {
         append_files_to_archive(archive_name, &files);
     } else if (strcmp(cmd, "-t") == 0) {
+        get_archive_file_list(archive_name, &files);
+    } else if (strcmp(cmd, "-u") == 0) {
         update_archive(archive_name, &files);
     } else if (strcmp(cmd, "-x") == 0) {
         extract_files_from_archive(archive_name);
     } else {
         printf("Unknown command: %s\n", cmd);
+        file_list_clear(&files);
         return -1;
     }
 
