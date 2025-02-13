@@ -23,20 +23,32 @@ int update_archive(const char *archive_name, const file_list_t *files) {
     // compares files from archive and files to update
     node_t *archive_file = archive_files.head;
     node_t *update_file = files->head;
-    while(update_file != NULL) {
-        if (archive_file == NULL) {
+
+    while (update_file != NULL) {
+        // reset to head on each iteration
+        archive_file = archive_files.head;
+        int found = 0;
+
+        // iterate through archived files
+        while (archive_file != NULL) {
+            if (strcmp(archive_file->name, update_file->name) == 0) {
+                // File found in the archive
+                found = 1;
+                break;
+            }
+            archive_file = archive_file->next;
+        }
+
+        // if the file that needs to be updated is not found, return error
+        if (!found) {
             fclose(archive);
             file_list_clear(&archive_files);
+            printf("Error: One or more of the specified files is not already present in archive");
             return -1;
-        } else {
-            if (archive_file->name != update_file->name) {
-                fclose(archive);
-                file_list_clear(&archive_files);
-                return -1;
-            }
         }
+
+        // iterate to next file to update
         update_file = update_file->next;
-        archive_file = archive_file->next;
     }
     fclose(archive);
     file_list_clear(&archive_files);

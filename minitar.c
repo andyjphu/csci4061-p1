@@ -291,9 +291,9 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
     while (read_status == 1) {
         read_status = fread(header, sizeof(tar_header), 1, archive);
 
-        // Check if the block is all zeros (possible first footer block)
+        // check if the block is all zeros (possible first footer block)
         if ((int)memcmp(header, block, BLOCK_SIZE) == 0) {
-            // Read the next block to confirm it's also all zeros
+            // read the next block to confirm it's also all zeros
             read_status = fread(header, sizeof(tar_header), 1, archive);
             if (read_status != 1) {
                 perror("unable to read given archive file, footers may not be correctly formatted");
@@ -307,20 +307,20 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
                 fclose(archive);
                 return 0;
             }
-            // If it's not a second zero block, print error
+            // if it's not a second zero block, print error
             perror("unexpected all zero block found in tar file");
             free(header);
             fclose(archive);
             return -1;
         }
 
-        // Add the filename to the list
+        // add the filename to the list
         file_list_add(files, header->name);
 
-        //convert file size from octal to long int for usability
+        // convert file size from octal to long int for usability
         file_size = strtol(header->size, NULL, 8);
 
-        //determine number of 512 blocks of content that follow after this header
+        // determine number of 512 blocks of content that follow after this header
         num_blocks = (int)ceil((double)file_size / BLOCK_SIZE);
 
         fseek(archive, num_blocks * BLOCK_SIZE, SEEK_CUR);
@@ -330,7 +330,79 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
     return -1;
 }
 
-
 int extract_files_from_archive(const char *archive_name) {
+//     printf("Extracting files from archive: %s\n", archive_name);
+
+//     // Open the archive file in read-binary mode
+//     FILE *archive = fopen(archive_name, "rb");
+//     if (!archive) {
+//         perror("Failed to open archive file");
+//         return -1;
+//     }
+
+//     tar_header header;
+//     char buffer[BLOCK_SIZE];
+//     size_t bytes_read;
+
+//     while (1) {
+//         // Read the header block
+//         bytes_read = fread(&header, sizeof(tar_header), 1, archive);
+//         if (bytes_read != 1) {
+//             if (feof(archive)) {
+//                 break; // End of archive
+//             }
+//             perror("Failed to read header from archive");
+//             fclose(archive);
+//             return -1;
+//         }
+
+//         // Check if the header block is empty (end of archive)
+//         if (header.name[0] == '\0') {
+//             break;
+//         }
+
+//         // Convert file size from octal string to integer
+//         size_t file_size = strtol(header.size, NULL, 8);
+
+//         // Print the file name and size for debugging
+//         printf("Extracting file: %s (size: %zu bytes)\n", header.name, file_size);
+
+//         // Open the output file for writing
+//         FILE *output_file = fopen(header.name, "wb");
+//         if (!output_file) {
+//             fprintf(stderr, "Failed to create file %s: %s\n", header.name, strerror(errno));
+//             fclose(archive);
+//             return -1;
+//         }
+
+//         // Read and write the file content
+//         size_t remaining_bytes = file_size;
+//         while (remaining_bytes > 0) {
+//             size_t bytes_to_read = (remaining_bytes < BLOCK_SIZE) ? remaining_bytes : BLOCK_SIZE;
+//             bytes_read = fread(buffer, 1, bytes_to_read, archive);
+//             if (bytes_read != bytes_to_read) {
+//                 perror("Failed to read file content from archive");
+//                 fclose(output_file);
+//                 fclose(archive);
+//                 return -1;
+//             }
+//             fwrite(buffer, 1, bytes_read, output_file);
+//             remaining_bytes -= bytes_read;
+//         }
+
+//         // Close the output file
+//         fclose(output_file);
+
+//         // Skip padding after the file content
+//         size_t padding_size = (BLOCK_SIZE - (file_size % BLOCK_SIZE)) % BLOCK_SIZE;
+//         if (padding_size > 0) {
+//             fseek(archive, padding_size, SEEK_CUR);
+//         }
+//     }
+
+//     // Close the archive file
+//     fclose(archive);
+
+    printf("Extraction complete.\n");
     return 0;
 }
