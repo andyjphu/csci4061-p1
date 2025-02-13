@@ -6,7 +6,6 @@ Test FAILED
 == Side-by-Side Comparison ==
 == Differing lines have a character like '|' '>' or '<' in the middle
 ==== EXPECT ====                                                              ==== ACTUAL ====
-Error: One or more of the specified files is not already present in archive | unable to read given archive file, footers may not be correctly formatted: Success
+Error: One or more of the specified files is not already present in archive <
 == Line Differences ==
 EXPECT 1) Error: One or more of the specified files is not already present in archive
-ACTUAL 1) unable to read given archive file, footers may not be correctly formatted: Success

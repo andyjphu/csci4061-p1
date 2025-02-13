@@ -295,7 +295,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
         if ((int)memcmp(header, block, BLOCK_SIZE) == 0) {
             // Read the next block to confirm it's also all zeros
             read_status = fread(header, sizeof(tar_header), 1, archive);
-            if (read_status != 0) {
+            if (read_status != 1) {
                 perror("unable to read given archive file, footers may not be correctly formatted");
                 free(header);
                 fclose(archive);

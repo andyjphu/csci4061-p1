@@ -66,6 +66,11 @@ int main(int argc, char **argv) {
         append_files_to_archive(archive_name, &files);
     } else if (strcmp(cmd, "-t") == 0) {
         get_archive_file_list(archive_name, &files);
+        node_t *curr = files.head;
+        for (int i = 0; i < files.size; i++) {
+            printf("%s\n", curr->name);
+            curr = curr->next;
+        }
     } else if (strcmp(cmd, "-u") == 0) {
         update_archive(archive_name, &files);
     } else if (strcmp(cmd, "-x") == 0) {
