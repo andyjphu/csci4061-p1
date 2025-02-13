@@ -238,7 +238,7 @@ int update_archive(const char *archive_name, const file_list_t *files) {
     get_archive_file_list(archive_name, &archive_files);
 
     // compares files from archive and files to update
-    node_t *archive_file
+    node_t *archive_file;
     node_t *update_file = files->head;
     while(update_file != NULL) {
         if (archive_file) == NULL {
