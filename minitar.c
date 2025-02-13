@@ -128,7 +128,7 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 
-int write_files_to_archive(const char *archive_name, const file_list_t *files) {
+int create_archive(const char *archive_name, const file_list_t *files) {
     FILE *archive = fopen(archive_name, "wb");
     if (!archive) {
         perror("Failed to open archive file");
@@ -211,19 +211,19 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files) {
     return 0;
 }
 
-int create_archive(const char *archive_name, const file_list_t *files) {
-    // FILE *archive = fopen(archive_name, "wb");
-    // if (!archive) {
-    //     perror("Failed to open archive file");
-    //     return -1;
-    // }
+// int create_archive(const char *archive_name, const file_list_t *files) {
+//     // FILE *archive = fopen(archive_name, "wb");
+//     // if (!archive) {
+//     //     perror("Failed to open archive file");
+//     //     return -1;
+//     // }
 
-    return write_files_to_archive(archive_name, files);
+//     return write_files_to_archive(archive_name, files);
 
-    //write_footer(archive);
+//     //write_footer(archive);
 
-    // fclose(archive);
-}
+//     // fclose(archive);
+// }
 
 
 
@@ -238,7 +238,7 @@ int append_files_to_archive(const char *archive_name, const file_list_t *files) 
     remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
     
 
-    return write_files_to_archive(archive_name, files);
+    return create_archive(archive_name, files);
 }
 
 

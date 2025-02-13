@@ -14,9 +14,9 @@ int main(int argc, char **argv) {
     file_list_init(&files);
 
     char *cmd = argv[1];
-    char *archive = argv[2];
+    char *archive = argv[3];
 
-    for (int i = 3; i < argc; i++) {
+    for (int i = 4; i < argc; i++) {
         file_list_add(&files, argv[i]);
 
     }

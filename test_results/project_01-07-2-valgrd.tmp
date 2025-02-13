@@ -1,15 +1,15 @@
-==1117778== Memcheck, a memory error detector
-==1117778== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==1117778== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==1117778== Command: ./minitar -c -f test.tar hello.txt f1.bin f2.bin
-==1117778== Parent PID: 1117525
-==1117778== 
-==1117778== 
-==1117778== HEAP SUMMARY:
-==1117778==     in use at exit: 0 bytes in 0 blocks
-==1117778==   total heap usage: 9 allocs, 9 frees, 2,616 bytes allocated
-==1117778== 
-==1117778== All heap blocks were freed -- no leaks are possible
-==1117778== 
-==1117778== For lists of detected and suppressed errors, rerun with: -s
-==1117778== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==1132647== Memcheck, a memory error detector
+==1132647== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1132647== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1132647== Command: ./minitar -c -f test.tar hello.txt f1.bin f2.bin
+==1132647== Parent PID: 1132287
+==1132647== 
+==1132647== 
+==1132647== HEAP SUMMARY:
+==1132647==     in use at exit: 0 bytes in 0 blocks
+==1132647==   total heap usage: 158 allocs, 158 frees, 82,917 bytes allocated
+==1132647== 
+==1132647== All heap blocks were freed -- no leaks are possible
+==1132647== 
+==1132647== For lists of detected and suppressed errors, rerun with: -s
+==1132647== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
