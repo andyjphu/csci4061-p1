@@ -129,6 +129,8 @@ int remove_trailing_bytes(const char *file_name, size_t nbytes) {
 
 
 int write_files_to_archive(const char *archive_name, const file_list_t *files, const int create) {
+    char err_msg[MAX_MSG_LEN];
+
     // either creates/overwrites or appends
     char procedure[3];
     if (create) {
@@ -140,7 +142,8 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files, c
     // open archive
     FILE *archive = fopen(archive_name, procedure);
     if (!archive) {
-        perror("Failed to open archive file: %s", archive_name);
+        snprintf(err_msg, MAX_MSG_LEN, "Failed to open archive file: %s", archive_name);
+        perror(err_msg);
         return -1;
     }
 
@@ -149,7 +152,8 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files, c
         // opens file
         FILE *src = fopen(curr->name, "rb");
         if (!src) {
-            perror("Failed to open source file: %s", curr->name);
+            snprintf(err_msg, MAX_MSG_LEN, "Failed to open source file: %s", curr->name);
+            perror(err_msg);
             fclose(archive);
             return -1;
         }
@@ -225,34 +229,34 @@ int create_archive(const char *archive_name, const file_list_t *files) {
     return write_files_to_archive(archive_name, files, 1);
 }
 
-int update_archive(const char *archive_name, const file_list_t *files) {
-    FILE *archive = fopen(archive_name, "rb");
-    if (!archive) {
-        perror("Failed to open archive file: %s", archive_name);
-        return -1;
-    }
+// int update_archive(const char *archive_name, const file_list_t *files) {
+//     FILE *archive = fopen(archive_name, "rb");
+//     if (!archive) {
+//         perror("Failed to open archive file: %s", archive_name);
+//         return -1;
+//     }
 
-    file_list_t archive_files;
-    file_list_init(&archive_files);
+//     file_list_t archive_files;
+//     file_list_init(&archive_files);
 
-    get_archive_file_list(archive_name, &archive_files);
+//     get_archive_file_list(archive_name, &archive_files);
 
-    // compares files from archive and files to update
-    node_t *archive_file
-    node_t *update_file = files->head;
-    while(update_file != NULL) {
-        if (archive_file) == NULL {
-            return -1;
-        } else {
-            if (archive_file->name != update_file->name) {
-                return -1;
-            }
-        }
-        update_file = update_file->next;
-        archive_file = archive_file->next;
-    }
-    return 0;
-}
+//     // compares files from archive and files to update
+//     node_t *archive_file
+//     node_t *update_file = files->head;
+//     while(update_file != NULL) {
+//         if (archive_file) == NULL {
+//             return -1;
+//         } else {
+//             if (archive_file->name != update_file->name) {
+//                 return -1;
+//             }
+//         }
+//         update_file = update_file->next;
+//         archive_file = archive_file->next;
+//     }
+//     return 0;
+// }
 
 int append_files_to_archive(const char *archive_name, const file_list_t *files) {
 
@@ -294,6 +298,7 @@ int get_archive_file_list(const char *archive_name, file_list_t *files) {
             }
             // If it's not a second zero block, print error
             perror("unexpected all zero block found in tar file");
+            free(header);
             return -1;
         }
 

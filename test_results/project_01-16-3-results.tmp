@@ -1,0 +1,38 @@
+-- Attempt to apply an update to files that are not contained in the archive
+Expected output is in file 'test_results/raw/project_01-16-3-expected.tmp'
+Actual output is in file 'test_results/raw/project_01-16-3-actual.tmp'
+Error: VALGRIND CHECK FAILED. Output:
+Unknown command: -u
+
+
+== Valgrind Results (from 'test_results/project_01-16-3-valgrd.tmp')
+==1173360== Memcheck, a memory error detector
+==1173360== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1173360== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1173360== Command: ./minitar -u -f test.tar f12.txt f14.txt f15.bin f17.bin
+==1173360== Parent PID: 1173182
+==1173360== 
+==1173360== 
+==1173360== HEAP SUMMARY:
+==1173360==     in use at exit: 160 bytes in 4 blocks
+==1173360==   total heap usage: 5 allocs, 1 frees, 1,184 bytes allocated
+==1173360== 
+==1173360== 120 bytes in 3 blocks are indirectly lost in loss record 1 of 2
+==1173360==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1173360==    by 0x1097F5: file_list_add (file_list.c:29)
+==1173360==    by 0x109607: main (minitar_main.c:56)
+==1173360== 
+==1173360== 160 (40 direct, 120 indirect) bytes in 1 blocks are definitely lost in loss record 2 of 2
+==1173360==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1173360==    by 0x109763: file_list_add (file_list.c:15)
+==1173360==    by 0x109607: main (minitar_main.c:56)
+==1173360== 
+==1173360== LEAK SUMMARY:
+==1173360==    definitely lost: 40 bytes in 1 blocks
+==1173360==    indirectly lost: 120 bytes in 3 blocks
+==1173360==      possibly lost: 0 bytes in 0 blocks
+==1173360==    still reachable: 0 bytes in 0 blocks
+==1173360==         suppressed: 0 bytes in 0 blocks
+==1173360== 
+==1173360== For lists of detected and suppressed errors, rerun with: -s
+==1173360== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
