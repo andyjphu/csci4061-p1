@@ -137,28 +137,58 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files) {
     node_t *curr = files->head;
     while (curr != NULL) {
         FILE *src = fopen(curr->name, "rb");
+        if (!src) {
+            perror("Failed to open source file: No such file or directory");
+            fclose(archive);
+            return -1;
+        }
 
-        // get file size
-        fseek(src, 0, SEEK_END);
+        // Get file size
+        if (fseek(src, 0, SEEK_END) != 0) {
+            perror("Failed to seek to end of file");
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
         long file_size = ftell(src);
+        if (file_size == -1) {
+            perror("Failed to get file size");
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
         fseek(src, 0, SEEK_SET);
 
-        //create header
+        // Create header
         tar_header *header = malloc(sizeof(tar_header));
-        fill_tar_header(header, curr->name);
-        
-        
-        //write header
-        fwrite(&header, sizeof(tar_header), 1, archive);
+        if (!header) {
+            perror("Failed to allocate memory for header");
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
 
-        // write file
+        if (fill_tar_header(header, curr->name) != 0) {
+            free(header);
+            fclose(src);
+            fclose(archive);
+            return -1;
+        }
+
+        // Compute checksum
+        compute_checksum(header);
+
+        // Write header
+        fwrite(header, sizeof(tar_header), 1, archive);
+
+        // Write file content
         char buffer[BLOCK_SIZE];
         size_t bytes_read;
-        while ((bytes_read = fread(buffer, 1, BLOCK_SIZE, src) > 0)) {
+        while ((bytes_read = fread(buffer, 1, BLOCK_SIZE, src)) > 0) {
             fwrite(buffer, 1, bytes_read, archive);
         }
 
-        // file padding
+        // File padding
         size_t padding_size = (BLOCK_SIZE - (file_size % BLOCK_SIZE)) % BLOCK_SIZE;
         if (padding_size > 0) {
             char padding[BLOCK_SIZE] = {0};
@@ -170,7 +200,8 @@ int write_files_to_archive(const char *archive_name, const file_list_t *files) {
         curr = curr->next;
     }
 
-    char empty_block[512] = {0};
+    // Write two empty blocks to signify end of archive
+    char empty_block[BLOCK_SIZE] = {0};
     fwrite(empty_block, 1, sizeof(empty_block), archive);
     fwrite(empty_block, 1, sizeof(empty_block), archive);
 
@@ -186,12 +217,11 @@ int create_archive(const char *archive_name, const file_list_t *files) {
     //     return -1;
     // }
 
-    write_files_to_archive(archive_name, files);
+    return write_files_to_archive(archive_name, files);
 
     //write_footer(archive);
 
     // fclose(archive);
-    return 0;
 }
 
 
@@ -203,13 +233,11 @@ int append_files_to_archive(const char *archive_name, const file_list_t *files) 
     //     return -1;
     // }
 
+
     remove_trailing_bytes(archive_name, BLOCK_SIZE * NUM_TRAILING_BLOCKS);
+    
 
-    write_files_to_archive(archive_name, files);
-
-    // write_footer(archive);
-
-    return 0;
+    return write_files_to_archive(archive_name, files);
 }
 
 int update_archive(const char *archive_name) {

@@ -1,57 +1,15 @@
-==1079780== Memcheck, a memory error detector
-==1079780== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==1079780== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==1079780== Command: ./minitar -c -f test.tar hello.txt f1.bin f2.bin
-==1079780== Parent PID: 1079430
-==1079780== 
-==1079780== Invalid read of size 4
-==1079780==    at 0x492FE4C: fseek (fseek.c:35)
-==1079780==    by 0x109E5D: write_files_to_archive (minitar.c:142)
-==1079780==    by 0x10A0B3: create_archive (minitar.c:189)
-==1079780==    by 0x1094C4: main (minitar_main.c:25)
-==1079780==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-==1079780== 
-==1079780== 
-==1079780== Process terminating with default action of signal 11 (SIGSEGV)
-==1079780==  Access not within mapped region at address 0x0
-==1079780==    at 0x492FE4C: fseek (fseek.c:35)
-==1079780==    by 0x109E5D: write_files_to_archive (minitar.c:142)
-==1079780==    by 0x10A0B3: create_archive (minitar.c:189)
-==1079780==    by 0x1094C4: main (minitar_main.c:25)
-==1079780==  If you believe this happened as a result of a stack
-==1079780==  overflow in your program's main thread (unlikely but
-==1079780==  possible), you can try to increase the size of the
-==1079780==  main thread stack using the --main-stacksize= flag.
-==1079780==  The main thread stack size used in this run was 8388608.
-==1079780== 
-==1079780== HEAP SUMMARY:
-==1079780==     in use at exit: 632 bytes in 5 blocks
-==1079780==   total heap usage: 6 allocs, 1 frees, 1,104 bytes allocated
-==1079780== 
-==1079780== 40 bytes in 1 blocks are still reachable in loss record 1 of 3
-==1079780==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1079780==    by 0x109619: file_list_add (file_list.c:15)
-==1079780==    by 0x10948B: main (minitar_main.c:20)
-==1079780== 
-==1079780== 120 bytes in 3 blocks are still reachable in loss record 2 of 3
-==1079780==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1079780==    by 0x1096AB: file_list_add (file_list.c:29)
-==1079780==    by 0x10948B: main (minitar_main.c:20)
-==1079780== 
-==1079780== 472 bytes in 1 blocks are still reachable in loss record 3 of 3
-==1079780==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1079780==    by 0x4926E7E: __fopen_internal (iofopen.c:65)
-==1079780==    by 0x4926E7E: fopen@@GLIBC_2.2.5 (iofopen.c:86)
-==1079780==    by 0x109DE4: write_files_to_archive (minitar.c:131)
-==1079780==    by 0x10A0B3: create_archive (minitar.c:189)
-==1079780==    by 0x1094C4: main (minitar_main.c:25)
-==1079780== 
-==1079780== LEAK SUMMARY:
-==1079780==    definitely lost: 0 bytes in 0 blocks
-==1079780==    indirectly lost: 0 bytes in 0 blocks
-==1079780==      possibly lost: 0 bytes in 0 blocks
-==1079780==    still reachable: 632 bytes in 5 blocks
-==1079780==         suppressed: 0 bytes in 0 blocks
-==1079780== 
-==1079780== For lists of detected and suppressed errors, rerun with: -s
-==1079780== ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 0 from 0)
+==1090547== Memcheck, a memory error detector
+==1090547== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1090547== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1090547== Command: ./minitar -c -f test.tar hello.txt f1.bin f2.bin
+==1090547== Parent PID: 1090271
+==1090547== 
+==1090547== 
+==1090547== HEAP SUMMARY:
+==1090547==     in use at exit: 0 bytes in 0 blocks
+==1090547==   total heap usage: 8 allocs, 8 frees, 2,600 bytes allocated
+==1090547== 
+==1090547== All heap blocks were freed -- no leaks are possible
+==1090547== 
+==1090547== For lists of detected and suppressed errors, rerun with: -s
+==1090547== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
